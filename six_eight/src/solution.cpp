@@ -29,16 +29,8 @@ namespace dak::six_eight
       my_tiles[my_tiles_count].pos = a_pos;
       my_tiles[my_tiles_count].tile = a_tile;
       my_tiles_count += 1;
-      for (const position_t& tile_block_pos : a_tile.get_positions().block_positions) {
+      for (const position_t& tile_block_pos : a_tile.get_description().block_positions) {
          const position_t placed_block_pos = a_pos.move(tile_block_pos);
-         #ifdef WAWA_DEBUG
-            if (placed_block_pos.x() < 0 || placed_block_pos.x() >= 6)
-               return throw std::exception("invalid tile position");
-
-            if (placed_block_pos.y() < 0 || placed_block_pos.x() >= 8)
-               return throw std::exception("invalid tile position");
-         #endif
-
          my_tiles_at_pos[placed_block_pos.x()][placed_block_pos.y()] = a_tile.id();
       }
    }
@@ -93,7 +85,7 @@ namespace dak::six_eight
 
    bool solution_t::is_compatible(const tile_t& a_tile, const position_t a_pos) const
    {
-      for (const position_t& tile_block_pos : a_tile.get_positions().block_positions) {
+      for (const position_t& tile_block_pos : a_tile.get_description().block_positions) {
          const position_t placed_block_pos = a_pos.move(tile_block_pos);
          if (is_occupied(placed_block_pos))
             return false;
@@ -104,6 +96,23 @@ namespace dak::six_eight
    void solution_t::normalize()
    {
       std::sort(my_tiles, my_tiles + my_tiles_count);
+      if (my_tiles_at_pos[0][0] > my_tiles_at_pos[5][7]) {
+         tile_t::id_t new_tiles_at_pos[6][8];
+         for (int y = 0; y < 8; ++y) {
+            for (int x = 0; x < 6; ++x) {
+               new_tiles_at_pos[x][y] = my_tiles_at_pos[5-x][7-y];
+            }
+         }
+         std::memcpy(my_tiles_at_pos, new_tiles_at_pos, sizeof(my_tiles_at_pos));
+      }
+   }
+
+   std::strong_ordering solution_t::operator<=>(const solution_t& another_solution) const
+   {
+      int result = std::memcmp(my_tiles_at_pos, another_solution.my_tiles_at_pos, sizeof(my_tiles_at_pos));
+      return result == 0 ? std::strong_ordering::equal
+           : result > 0 ? std::strong_ordering::greater
+           : std::strong_ordering::less;
    }
 
    bool solution_t::is_valid() const

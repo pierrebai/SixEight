@@ -49,11 +49,15 @@ namespace dak::six_eight
       std::vector<sub_puzzle_t> sub_puzzles;
       std::vector<tile_t> other_tiles(a_current_sub_puzzle.other_tiles);
       for (size_t i = 0; i < other_tiles.size(); ++i) {
-         sub_puzzles.emplace_back(sub_puzzle_t{
-            other_tiles[0],
-            { other_tiles.begin() + 1, other_tiles.end() },
-            position_to_fill
-         });
+         const tile_t& tile_to_place = other_tiles[0];
+         const int possible_rotations = tile_to_place.get_description().possible_rotations;
+         for (int rotation = 0; rotation < possible_rotations; ++rotation) {
+            sub_puzzles.emplace_back(sub_puzzle_t{
+               other_tiles[0].rotate(rotation),
+               { other_tiles.begin() + 1, other_tiles.end() },
+               position_to_fill
+            });
+         }
          std::rotate(other_tiles.begin(), other_tiles.begin() + 1, other_tiles.end());
       }
 

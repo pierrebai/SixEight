@@ -78,6 +78,7 @@ namespace dak::six_eight
       solution_t new_partial = partial_solution;
       new_partial.add_tile(new_tile, new_pos);
 
+      // std::cout << new_partial << std::endl;
       if (a_ctx.puzzle.has_more_sub_puzzles(a_sub_puzzle))
       {
          solve_partial(a_sub_puzzle, new_partial, a_ctx);
@@ -99,10 +100,11 @@ namespace dak::six_eight
       const auto next_positions = a_ctx.puzzle.get_sub_puzzle_positions(a_sub_puzzle, partial_solution);
       for (const auto new_pos : next_positions)
       {
-         for (int selected_orientation = 0; selected_orientation < 4; ++selected_orientation)
+         const int possible_rotations = 1;
+         for (int rotation = 0; rotation < possible_rotations; ++rotation)
          {
-            const tile_t tile = a_sub_puzzle.tile_to_place.rotate(selected_orientation);
-            const tile_description_t positions = tile.get_positions();
+            const tile_t tile = a_sub_puzzle.tile_to_place.rotate(rotation);
+            const tile_description_t positions = tile.get_description();
             const position_t& topmost_leftmost = positions.block_positions[0];
             position_t adjusted_new_pos = new_pos;
             adjusted_new_pos -= topmost_leftmost;

@@ -65,7 +65,7 @@ namespace dak::six_eight
       bool is_valid() const;
 
       // Compare solutions.
-      auto operator<=>(const solution_t& another_solution) const = default;
+      std::strong_ordering operator<=>(const solution_t& another_solution) const;
 
    private:
       tile_t& internal_tile_at(const position_t& a_pos) const;

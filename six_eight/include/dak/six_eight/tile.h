@@ -6,7 +6,8 @@
 #include "dak/six_eight/position.h"
 
 #include <algorithm>
-#include <map>
+#include <unordered_map>
+#include <vector>
 
 
 namespace dak::six_eight
@@ -18,6 +19,7 @@ namespace dak::six_eight
 
    struct tile_description_t
    {
+      int possible_rotations;
       position_t block_positions[6];
    };
 
@@ -36,13 +38,13 @@ namespace dak::six_eight
       // Return the tile id.
       id_t id() const { return my_id; }
 
-      // Return the tile rotation.
+      // Return the tile current rotation.
       int get_rotation() const { return my_rotation; }
 
       // Rotate the tile in place by a multiple of quarter of a turn.
       tile_t& rotate_in_place(int an_amount)
       {
-         my_rotation = (my_rotation + (6000u - an_amount)) % 4u;
+         my_rotation = (my_rotation + an_amount) % 4u;
          return *this;
       }
 
@@ -65,12 +67,9 @@ namespace dak::six_eight
       auto operator<=>(const tile_t& an_other) const = default;
 
       // Return the six block positions occupied by the rotated tile.
-      tile_description_t get_positions() const;
+      tile_description_t get_description() const;
 
    private:
-      // Description of tiles indexed by their id.
-      static std::map<id_t, tile_description_t> tile_by_ids;
-
       id_t         my_id = 0;
       std::uint8_t my_rotation = 0;
    };

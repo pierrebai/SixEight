@@ -1,5 +1,6 @@
 #include "dak/six_eight/tile.h"
 
+#include <mutex>
 
 namespace dak::six_eight
 {
@@ -9,10 +10,14 @@ namespace dak::six_eight
    //
    // Can be rotated. Two tiles are the same if they match under some rotation.
 
-   std::map<char, tile_description_t> tile_t::tile_by_ids =
+   // Description of tiles indexed by their id.
+   using rotated_descriptions_t = std::vector<tile_description_t>;
+   using rotated_tile_by_ids_t = std::unordered_map<tile_t::id_t, rotated_descriptions_t>;
+
+   std::unordered_map<char, tile_description_t> tile_by_ids =
    {
-      { 0, { } },
-      { 'a', {
+      { 0, { 1 } },
+      { 'a', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(2, 0),
@@ -20,7 +25,7 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { 'A', {
+      { 'A', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -28,7 +33,7 @@ namespace dak::six_eight
           position_t(1, 0),
           position_t(2, 0),
       }},
-      { 'b', {
+      { 'b', { 2,
           position_t(0, 2),
           position_t(0, 3),
           position_t(0, 4),
@@ -36,7 +41,7 @@ namespace dak::six_eight
           position_t(1, 1),
           position_t(1, 2),
       }},
-      { 'B', {
+      { 'B', { 2,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -44,7 +49,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(1, 4),
       }},
-      { 'c', {
+      { 'c', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -52,7 +57,7 @@ namespace dak::six_eight
           position_t(1, 0),
           position_t(1, 3),
       }},
-      { 'd', {
+      { 'd', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(1, 0),
@@ -60,7 +65,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'e', {
+      { 'e', { 4,
           position_t(0, 2),
           position_t(1, 0),
           position_t(1, 1),
@@ -68,7 +73,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 0),
       }},
-      { 'E', {
+      { 'E', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
@@ -76,7 +81,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 2),
       }},
-      { 'f', {
+      { 'f', { 4,
           position_t(0, 1),
           position_t(1, 1),
           position_t(1, 2),
@@ -84,7 +89,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'F', {
+      { 'F', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -92,7 +97,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(2, 2),
       }},
-      { 'g', {
+      { 'g', { 4,
           position_t(0, 0),
           position_t(0, 2),
           position_t(0, 3),
@@ -100,7 +105,7 @@ namespace dak::six_eight
           position_t(1, 1),
           position_t(1, 2),
       }},
-      { 'G', {
+      { 'G', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -108,7 +113,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'h', {
+      { 'h', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(1, 2),
@@ -116,7 +121,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'H', {
+      { 'H', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -124,7 +129,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'i', {
+      { 'i', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -132,7 +137,7 @@ namespace dak::six_eight
           position_t(1, 0),
           position_t(1, 2),
       }},
-      { 'I', {
+      { 'I', { 4,
           position_t(0, 0),
           position_t(0, 2),
           position_t(1, 0),
@@ -140,7 +145,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'j', {
+      { 'j', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -148,7 +153,7 @@ namespace dak::six_eight
           position_t(0, 4),
           position_t(1, 4),
       }},
-      { 'J', {
+      { 'J', { 4,
           position_t(0, 4),
           position_t(1, 0),
           position_t(1, 1),
@@ -156,7 +161,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(1, 4),
       }},
-      { 'k', {
+      { 'k', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -164,7 +169,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 3),
       }},
-      { 'K', {
+      { 'K', { 4,
           position_t(0, 3),
           position_t(1, 2),
           position_t(1, 3),
@@ -172,7 +177,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'l', {
+      { 'l', { 4,
           position_t(0, 1),
           position_t(1, 0),
           position_t(1, 1),
@@ -180,7 +185,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'm', {
+      { 'm', { 2,
           position_t(0, 0),
           position_t(0, 1),
           position_t(1, 0),
@@ -188,7 +193,7 @@ namespace dak::six_eight
           position_t(2, 0),
           position_t(2, 1),
       }},
-      { 'n', {
+      { 'n', { 2,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -196,7 +201,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'N', {
+      { 'N', { 2,
           position_t(0, 1),
           position_t(0, 2),
           position_t(0, 3),
@@ -204,7 +209,7 @@ namespace dak::six_eight
           position_t(1, 1),
           position_t(1, 2),
       }},
-      { 'o', {
+      { 'o', { 2, 
           position_t(0, 2),
           position_t(1, 0),
           position_t(1, 1),
@@ -212,7 +217,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 1),
       }},
-      { 'O', {
+      { 'O', { 2,
           position_t(0, 1),
           position_t(1, 0),
           position_t(1, 1),
@@ -220,7 +225,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 2),
       }},
-      { 'p', {
+      { 'p', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -228,7 +233,7 @@ namespace dak::six_eight
           position_t(0, 4),
           position_t(1, 2),
       }},
-      { 'q', {
+      { 'q', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -236,7 +241,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'Q', {
+      { 'Q', { 4,
           position_t(0, 2),
           position_t(0, 3),
           position_t(1, 0),
@@ -244,7 +249,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(1, 3),
       }},
-      { 'r', {
+      { 'r', { 4,
           position_t(0, 1),
           position_t(1, 0),
           position_t(1, 1),
@@ -252,7 +257,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(1, 4),
       }},
-      { 'R', {
+      { 'R', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -260,7 +265,7 @@ namespace dak::six_eight
           position_t(0, 4),
           position_t(1, 1),
       }},
-      { 's', {
+      { 's', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
@@ -268,7 +273,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'S', {
+      { 'S', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(1, 0),
@@ -276,7 +281,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(2, 0),
       }},
-      { 't', {
+      { 't', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
@@ -284,7 +289,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 0),
       }},
-      { 'u', {
+      { 'u', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -292,7 +297,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(2, 2),
       }},
-      { 'v', {
+      { 'v', { 4,
           position_t(0, 1),
           position_t(1, 0),
           position_t(1, 1),
@@ -300,7 +305,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 1),
       }},
-      { 'w', {
+      { 'w', { 4,
           position_t(0, 1),
           position_t(1, 1),
           position_t(2, 0),
@@ -308,7 +313,7 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { 'W', {
+      { 'W', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -316,7 +321,7 @@ namespace dak::six_eight
           position_t(1, 1),
           position_t(2, 1),
       }},
-      { 'x', {
+      { 'x', { 4,
           position_t(0, 2),
           position_t(1, 0),
           position_t(1, 1),
@@ -324,7 +329,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 3),
       }},
-      { 'X', {
+      { 'X', { 4,
           position_t(0, 3),
           position_t(1, 0),
           position_t(1, 1),
@@ -332,7 +337,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 2),
       }},
-      { 'y', {
+      { 'y', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(0, 3),
@@ -340,7 +345,7 @@ namespace dak::six_eight
           position_t(1, 0),
           position_t(1, 1),
       }},
-      { 'Y', {
+      { 'Y', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(1, 1),
@@ -348,7 +353,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(1, 4),
       }},
-      { 'z', {
+      { 'z', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(1, 1),
@@ -356,7 +361,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { 'Z', {
+      { 'Z', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -364,7 +369,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { '1', {
+      { '1', { 4,
           position_t(0, 1),
           position_t(1, 0),
           position_t(1, 1),
@@ -372,7 +377,7 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { '!', {
+      { '!', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(0, 3),
@@ -380,7 +385,7 @@ namespace dak::six_eight
           position_t(1, 1),
           position_t(2, 1),
       }},
-      { '2', {
+      { '2', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
@@ -388,7 +393,7 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { '@', {
+      { '@', { 4,
           position_t(0, 2),
           position_t(0, 3),
           position_t(1, 0),
@@ -396,7 +401,7 @@ namespace dak::six_eight
           position_t(1, 2),
           position_t(2, 0),
       }},
-      { '3', {
+      { '3', { 4,
           position_t(0, 1),
           position_t(1, 1),
           position_t(1, 2),
@@ -404,7 +409,7 @@ namespace dak::six_eight
           position_t(2, 0),
           position_t(2, 1),
       }},
-      { '#', {
+      { '#', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(1, 1),
@@ -412,7 +417,7 @@ namespace dak::six_eight
           position_t(1, 3),
           position_t(2, 1),
       }},
-      { '4', {
+      { '4', { 4,
           position_t(0, 0),
           position_t(0, 1),
           position_t(1, 1),
@@ -420,7 +425,7 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { '$', {
+      { '$', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(0, 3),
@@ -428,7 +433,7 @@ namespace dak::six_eight
           position_t(2, 0),
           position_t(2, 1),
       }},
-      { '5', {
+      { '5', { 4,
           position_t(0, 1),
           position_t(0, 2),
           position_t(1, 0),
@@ -436,7 +441,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(2, 2),
       }},
-      { '6', {
+      { '6', { 2,
           position_t(0, 2),
           position_t(0, 3),
           position_t(1, 1),
@@ -444,7 +449,7 @@ namespace dak::six_eight
           position_t(2, 0),
           position_t(2, 1),
       }},
-      { '^', {
+      { '^', { 2,
           position_t(0, 0),
           position_t(0, 1),
           position_t(1, 1),
@@ -452,23 +457,23 @@ namespace dak::six_eight
           position_t(2, 2),
           position_t(2, 3),
       }},
-      { '7', {
+      { '7', { 2,
           position_t(0, 3),
-          position_t(1, 0),
-          position_t(1, 1),
-          position_t(1, 2),
-          position_t(1, 3),
-          position_t(2, 0),
-      }},
-      { '&', {
-          position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
           position_t(1, 2),
           position_t(1, 3),
+          position_t(2, 0),
+      }},
+      { '&', { 2,
+          position_t(0, 0),
+          position_t(1, 0),
+          position_t(1, 1),
+          position_t(1, 2),
+          position_t(1, 3),
           position_t(2, 3),
       }},
-      { '8', {
+      { '8', { 2,
           position_t(0, 0),
           position_t(0, 1),
           position_t(0, 2),
@@ -476,7 +481,7 @@ namespace dak::six_eight
           position_t(0, 4),
           position_t(0, 5),
       }},
-      { '9', {
+      { '9', { 4,
           position_t(0, 1),
           position_t(1, 1),
           position_t(1, 2),
@@ -484,7 +489,7 @@ namespace dak::six_eight
           position_t(2, 1),
           position_t(3, 0),
       }},
-      { '(', {
+      { '(', { 4,
           position_t(0, 0),
           position_t(1, 0),
           position_t(1, 1),
@@ -494,26 +499,46 @@ namespace dak::six_eight
       }},
    };
 
-   tile_description_t tile_t::get_positions() const
+   static tile_description_t rotate_description(const tile_description_t& a_desc, int a_rotation)
    {
-      tile_description_t positions = tile_by_ids[my_id];
+      tile_description_t new_desc = a_desc;
       int min_x = 1000;
       int min_y = 1000;
-      for (position_t& pos : positions.block_positions)
-      {
-         pos.rotate_in_place(my_rotation);
+      for (position_t& pos : new_desc.block_positions) {
+         pos.rotate_in_place(a_rotation);
          min_x = std::min(min_x, pos.x());
          min_y = std::min(min_y, pos.y());
       }
 
-      for (position_t& pos : positions.block_positions)
-      {
+      for (position_t& pos : new_desc.block_positions)
          pos = pos.move(-min_x, -min_y);
+
+      std::sort(new_desc.block_positions, new_desc.block_positions + 6);
+
+      return new_desc;
+
+   }
+
+   static void initialize_descriptions(rotated_tile_by_ids_t& descriptions)
+   {
+      for (const auto&[id, desc] : tile_by_ids) {
+         for (int rotation = 0; rotation < desc.possible_rotations; ++rotation) {
+            descriptions[id].emplace_back(rotate_description(desc, rotation));
+         }
       }
+   }
 
-      std::sort(positions.block_positions, positions.block_positions + 6);
+   static rotated_tile_by_ids_t& get_descriptions()
+   {
+      static rotated_tile_by_ids_t descriptions;
+      static std::once_flag flag;
+      std::call_once(flag, &initialize_descriptions, descriptions);
+      return descriptions;
+   }
 
-      return positions;
+   tile_description_t tile_t::get_description() const
+   {
+      return get_descriptions()[my_id][my_rotation];
    }
 
 }
