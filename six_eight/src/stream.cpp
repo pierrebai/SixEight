@@ -62,31 +62,37 @@ namespace dak::six_eight
 
    std::ostream& operator<<(std::ostream& a_stream, const tile_t& a_tile)
    {
-      a_stream << a_tile.id() << ' ' << a_tile.get_rotation() << ' ';
+      a_stream << a_tile.id() << " rotated " << a_tile.get_rotation() << " times ";
       return a_stream;
    }
 
    std::wostream& operator<<(std::wostream& a_stream, const tile_t& a_tile)
    {
-      a_stream << a_tile.id() << ' ' << a_tile.get_rotation() << ' ';
+      a_stream << a_tile.id() << " rotated " << a_tile.get_rotation() << " times ";
       return a_stream;
    }
 
    std::istream& operator>>(std::istream& a_stream, tile_t& a_tile)
    {
-      char tile_id = 0;
-      if (a_stream >> tile_id)
-         a_tile = tile_t(tile_id);
+      int tile_id = 0;
+      int rotation = 0;
+      std::string word1;
+      std::string word2;
+      a_stream >> tile_id >> word1 >> word2 >> rotation;
+      if (a_stream)
+         a_tile = tile_t(tile_id).rotate_in_place(rotation);
       return a_stream;
    }
 
    std::wistream& operator>>(std::wistream& a_stream, tile_t& a_tile)
    {
-      int tile_id = 0;
+      wchar_t tile_id = 0;
       int rotation = 0;
-      a_stream >> tile_id >> rotation;
+      std::wstring word1;
+      std::wstring word2;
+      a_stream >> tile_id >> word1 >> word2 >> rotation;
       if (a_stream)
-         a_tile = tile_t(tile_id).rotate_in_place(rotation);
+         a_tile = tile_t(char(tile_id)).rotate_in_place(rotation);
       return a_stream;
    }
 

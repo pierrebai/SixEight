@@ -477,7 +477,7 @@ namespace dak::six_eight_solver_app
                    << std::setw(3) << placed_tile.pos.x()
                    << " / "
                    << std::setw(3) << placed_tile.pos.y()
-                   << " : tile #" << std::setw(2) << placed_tile.tile << "\n";
+                   << " : tile" << std::setw(2) << placed_tile.tile << "\n";
          }
          my_solutions_list->addItem(stream.str().c_str());
       }
@@ -595,7 +595,7 @@ namespace dak::six_eight_solver_app
       QColor(220, 220, 10),
       QColor(10, 180, 180),
       QColor(220, 10, 220),
-      QColor(50, 50, 50),
+      QColor(70, 70, 70),
       QColor(220, 150, 40),
       QColor(120, 220, 240, 128),
    };
