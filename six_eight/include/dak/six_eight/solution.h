@@ -66,6 +66,7 @@ namespace dak::six_eight
 
       // Compare solutions.
       std::strong_ordering operator<=>(const solution_t& another_solution) const;
+      bool operator==(const solution_t& another_solution) const { return operator<=>(another_solution) == 0; }
 
    private:
       tile_t& internal_tile_at(const position_t& a_pos) const;

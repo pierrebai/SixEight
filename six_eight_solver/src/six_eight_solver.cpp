@@ -28,37 +28,35 @@ int main(int arg_count, char** arg_values)
          const path filename(arg_values[arg_index]);
          cout << "Solving puzzle: " << filename.filename() << endl;
 
-         std::shared_ptr<puzzle_t> puzzle;
-         {
-            ifstream puzzle_stream(filename);
-            puzzle_stream >> puzzle;
-         }
-
-         if (!puzzle)
-         {
-            cout << "Invalid puzzle file: " << filename.filename() << endl;
-            continue;
-         }
-
-         cout << "Puzzle: " << puzzle << endl;
-
-         string elapsed_time;
-         stopwatch_t stopwatch(elapsed_time);
-
-         stream_progress_t progress(cout);
-         const auto solutions = solve(*puzzle, progress);
-
-         stopwatch.stop();
-
-         cout << "\n";
-         cout << "time: " << elapsed_time << endl;
-         cout << "solutions: " << solutions << endl;
+         ifstream puzzle_stream(filename);
 
          path solution_filename(filename);
          solution_filename.replace_extension("solutions.txt");
-
          ofstream solution_stream(solution_filename);
-         solution_stream << solutions << endl;
+
+         while (puzzle_stream) {
+            std::shared_ptr<puzzle_t> puzzle;
+            puzzle_stream >> puzzle;
+   
+            if (!puzzle)
+               break;
+
+            cout << "Puzzle: " << puzzle << endl;
+
+            string elapsed_time;
+            stopwatch_t stopwatch(elapsed_time);
+
+            stream_progress_t progress(cout);
+            const auto solutions = solve(*puzzle, progress);
+
+            stopwatch.stop();
+
+            cout << "\n";
+            cout << "time: " << elapsed_time << endl;
+            cout << solutions << endl;
+
+            solution_stream << solutions << endl;
+         }
       }
       catch (exception& ex)
       {

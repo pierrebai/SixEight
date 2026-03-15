@@ -16,10 +16,8 @@ namespace dak::six_eight::tests
       
       TEST_METHOD(solve_simple_puzzle)
       {
-         const std::vector<tile_t> simple_tiles = { 3, 5, 8, 12, 14, 43, 46, 50, 52, 54, };
-         const std::vector<color_t> simple_loops = { color_t::blue(), };
-         const bool simple_must_be_loops = true;
-         any_shape_puzzle_t simple_puzzle(simple_tiles, simple_loops, simple_must_be_loops);
+         const std::vector<tile_t> simple_tiles = { 'm', 'q', 'd', 'x', 'u', 's', 'A', 'z' };
+         puzzle_t simple_puzzle(simple_tiles);
 
          struct dummy_progress_t : progress_t
          {
@@ -28,7 +26,7 @@ namespace dak::six_eight::tests
          dummy_progress_t progress;
          auto simple_solutions = solve(simple_puzzle, progress);
 
-         Assert::AreEqual<size_t>(48, simple_solutions.size());
+         Assert::AreEqual<size_t>(2, simple_solutions.size());
       }
    };
 }

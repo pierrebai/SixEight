@@ -38,6 +38,9 @@ namespace dak::six_eight
       // Return the tile id.
       id_t id() const { return my_id; }
 
+      // Return the tile id of all tiles.
+      static const std::vector<id_t>& get_all_ids();
+
       // Return the tile current rotation.
       int get_rotation() const { return my_rotation; }
 

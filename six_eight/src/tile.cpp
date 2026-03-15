@@ -541,4 +541,17 @@ namespace dak::six_eight
       return get_descriptions()[my_id][my_rotation];
    }
 
+   /* static */
+   const std::vector<tile_t::id_t>& tile_t::get_all_ids()
+   {
+      static std::vector<tile_t::id_t> ids = {
+         'a', 'A', 'b', 'B', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J',
+         'k', 'K', 'l', 'm', 'n', 'N', 'o', 'O', 'p', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'u', 'v',
+         'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '!', '2', '@', '3', '#', '4', '$', '5',
+         '6', '^', '7', '&', '8', '9', '('
+      };
+
+      return ids;
+   }
+
 }
