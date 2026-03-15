@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Command-line solver",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetDirectory}/six_eight_solver.exe",
+            "args": [
+                "${workspaceFolder}/six_eight_solver/puzzles/Puzzles.txt"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "environment": [],
+            "console": "internalConsole",
+        },
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetDirectory}/six_eight_solver.exe",
+            "args": [
+                "${workspaceFolder}/six_eight_solver/puzzles/Puzzles.txt"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "environment": [],
+            "console": "internalConsole",
+        },
+    ]
+}
